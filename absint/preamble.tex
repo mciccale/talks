@@ -1,0 +1,70 @@
+% Core ------------------------------------------------------------------------%
+\usetheme{Lumen}
+\usepackage[spanish,english]{babel}
+
+% Math (requires being first) -------------------------------------------------%
+% \usepackage{amsmath}
+% \usepackage{amsthm}
+\usepackage{galois}
+% \usepackage{marvosym}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{empheq}
+
+% Layout & Document -----------------------------------------------------------%
+\usepackage{transparent}
+\usepackage{graphicx}
+\usepackage{xspace}
+\usepackage[dvipsnames]{xcolor}
+%
+\definecolor[named]{MyPurple}{cmyk}{0.55,1,0,0.15}
+\definecolor[named]{MyDarkBlue}{cmyk}{1,0.58,0,0.21}
+\definecolor[named]{LightGray}{gray}{0.9}
+
+% Fonts -----------------------------------------------------------------------%
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[scaled=.97,zerostyle=b]{newtxtt}
+\usepackage[scr=boondox]{mathalpha}
+%
+\font\bboldfonttwelve=bbold12 at 12pt%
+\font\bboldfontten=bbold12 at 10pt%
+\font\bboldfonteight=bbold12 at 8pt%
+\renewcommand{\mathbb}[1]{%
+  \mathchoice%
+    {\mbox{\bboldfontten#1}}%
+    {\mbox{\bboldfontten#1}}%
+    {\mbox{\scriptsize\bboldfontten#1}}%
+    {\mbox{\tiny\bboldfonteight#1}}%
+}
+%
+\usepackage{amsbsy}
+
+% Listings --------------------------------------------------------------------%
+\usepackage{xparse}
+\usepackage{listings}
+
+% Tables ----------------------------------------------------------------------%
+\usepackage{booktabs}
+\usepackage{multirow}
+
+% Hyperlinks & References -----------------------------------------------------%
+\usepackage{url}
+%
+\hypersetup{%
+  colorlinks=true,%
+  linkcolor=black,%
+  citecolor=MyDarkBlue,%
+  urlcolor=MyDarkBlue,%
+  filecolor=MyDarkBlue%
+}
+
+% % Beamer ----------------------------------------------------------------------%
+\usepackage{appendixnumberbeamer}
+
+% Wants to be Last? -----------------------------------------------------------%
+\usepackage{csquotes}
+
+%%% Local Variables:
+%%% mode: LaTeX
+%%% TeX-master: "main"
+%%% End:

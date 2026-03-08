@@ -1,0 +1,84 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemeLumen}[2025/09/12]
+
+% Fonts -----------------------------------------------------------------------%
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+
+% Theme basics ----------------------------------------------------------------%
+\usetheme{default}
+\usecolortheme[named=black]{structure}
+\useinnertheme{rectangles}
+
+% Outer -----------------------------------------------------------------------%
+\setbeamertemplate{headline}{}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{
+  \hfill%
+  \usebeamercolor[fg]{page number in head/foot}%
+  \usebeamerfont{page number in head/foot}%
+  \setbeamertemplate{page number in head/foot}[framenumber]%
+  \usebeamertemplate*{page number in head/foot}\kern1em\vskip1em%
+}
+%
+\setbeamersize{text margin left=2em,text margin right=2em}
+
+% https://tex.stackexchange.com/a/109984/193011
+\setbeamertemplate{frametitle}
+  {\vspace{.6em}
+   \begin{beamercolorbox}[center,wd=\textwidth]{frametitle}
+     \insertframetitle
+   \end{beamercolorbox}
+   \vspace{.6em}}
+\setbeamertemplate{sections/subsections in toc}[default]
+%
+\newcommand{\greybox}[2][\textwidth]{%
+ \setbeamercolor{coloredboxstuff}{bg=gray!9}
+ \begin{beamercolorbox}[center,sep=1em,wd=#1]{coloredboxstuff}
+ #2
+ \end{beamercolorbox}
+}
+
+% More fonts ------------------------------------------------------------------%
+\RequirePackage[bitstream-charter]{mathdesign}
+\RequirePackage[T1]{fontenc}
+\usefonttheme{serif}
+%
+\setbeamerfont{title}{size=\huge,series=\bfseries,parent=structure}
+\setbeamerfont{subtitle}{size=\Large,series=\bfseries}
+\setbeamerfont{frametitle}{size=\Large,series=\bfseries,parent=structure}
+%
+\setbeamerfont{alerted text}{series=\bfseries,parent=structure}
+\setbeamercolor{alerted text}{fg=black} % The default is nice too
+%
+\setbeamerfont{itemize/enumerate subbody}{size=\normalsize}
+\setbeamerfont{itemize/enumerate subsubbody}{size=\normalsize}
+
+% Sections --------------------------------------------------------------------%
+\AtBeginSection{
+  \begin{frame}[plain,noframenumbering]
+    \vspace*{2em}
+    \huge\bfseries\centering\insertsectionhead
+  \end{frame}
+}
+
+% Itemize ---------------------------------------------------------------------%
+\setlength{\leftmargini}{11pt}
+\setlength{\leftmarginii}{11pt}
+
+% https://tex.stackexchange.com/a/432377/193011
+\setbeamertemplate{itemize item}{\scriptsize$\textcolor{lightgray}{\blacksquare}$}
+\setbeamertemplate{itemize subitem}{$\textcolor{lightgray}{\bullet}$}
+\setbeamertemplate{itemize subsubitem}{}
+%
+\setbeamertemplate{enumerate item}{\footnotesize\insertenumlabel.}
+%
+\newcommand{\widesep}{\addtolength{\itemsep}{12pt}}
+%
+\setbeamerfont{block title}{series=\bfseries}
+\setbeamercolor{block title}{fg=black}
+%
+\setbeamerfont{block title example}{series=\bfseries}
+\setbeamercolor{block title example}{fg=black}
+
+\endinput%

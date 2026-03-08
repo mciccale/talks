@@ -1,0 +1,51 @@
+\begin{tikzpicture}[yscale=1.5]
+  \node (top) at (0, 5)
+    {$\{X/\top,Y/\top\}$};
+  %
+  \node (topeven) at (-5.7, 3.5)
+    {$\{X/\top,Y/\mathit{even}\}$};
+  \node (eventop) at (-1.9, 3.5)
+    {$\{X/\mathit{even},Y/\top\}$};
+  \node (oddtop) at (1.9, 3.5)
+    {$\{X/\mathit{odd},Y/\top\}$};
+  \node (topodd) at (5.6, 3.5)
+    {$\{X/\top,Y/\mathit{odd}\}$};
+  %
+  \node (eveneven) at (-5.7, 2)
+    {$\{X/\mathit{even},Y/\mathit{even}\}$};
+  \node (oddeven) at (-1.9, 2)
+    {$\{X/\mathit{odd},Y/\mathit{even}\}$};
+  \node (evenodd) at (1.9, 2)
+    {$\{X/\mathit{even},Y/\mathit{odd}\}$};
+  \node (oddodd) at (5.6, 2)
+    {$\{X/\mathit{odd},Y/\mathit{odd}\}$};
+  %
+  \node (bot) at (0, 0.5)
+    {$\{X/\bot,Y/\bot\}$};
+  
+  \draw
+  (top) -- (topeven)
+  (top) -- (eventop)
+  (top) -- (topodd)
+  (top) -- (oddtop)
+  %
+  (topeven) -- (eveneven)
+  (topeven) -- (oddeven)
+  (eventop) -- (eveneven)
+  (eventop) -- (evenodd)
+  (topodd)  -- (evenodd)
+  (topodd)  -- (oddodd)
+  (oddtop)  -- (oddeven)
+  (oddtop)  -- (oddodd)
+  %
+  (eveneven) -- (bot)
+  (evenodd) -- (bot)
+  (oddeven) -- (bot)
+  (oddodd) -- (bot);
+\end{tikzpicture}
+
+%%% Local Variables:
+%%% mode: LaTeX
+%%% TeX-master: "../thesis"
+%%% TeX-command-extra-options: "-shell-escape"
+%%% End:

@@ -1,0 +1,67 @@
+% \resizebox{.65\textwidth}{!}{
+  \begin{tikzpicture}
+  \footnotesize
+  \node at(-3, 2.5) {$\mathbb{D}$};
+  \node[draw=none, ellipse, fill=red!50, opacity=.5, minimum width=2.5cm, minimum height=4cm] (con) at (-3,0) {};
+  \draw[red!70!black] (-3,0) ellipse (1.25cm and 2cm);
+  \node at(3, 2.5) {$\mathbb{D}^\sharp$};
+  \node[draw=none, ellipse, fill=blue!50, opacity=.5, minimum width=2.5cm, minimum height=4cm] (abs) at (3,0) {};
+  \draw[blue!70!black] (3,0) ellipse (1.25cm and 2cm);
+  %
+  \draw[->, thick]
+  (-3.2, 1)
+  node[circle, fill, inner sep=1pt] {}
+  node[above] {$f_1$}
+  to[bend left]
+  node[midway, above] {$\alpha$}
+  (3,1)
+  node[above] {\hspace{5pt}$\alpha(f_1)$};
+  \draw[->, thick]
+  (-3.7, .2)
+  node[circle, fill, inner sep=1pt] {}
+  node[below] {$f_2$}
+  to[bend left]
+  node[midway, above] {$\alpha$}
+  (2.5,.3)
+  node[below] {$\alpha(f_2)$};
+  \draw[dashed]
+  (-3.2, 1)
+  to node[midway, above left] {$\subseteq$}
+  (-3.7, .2);
+  \draw[dashed]
+  (3, 1)
+  to node[midway, below right] {$\sqsubseteq$}
+  (2.5, .3);
+  
+  \draw[->, thick]
+  (3.2, -.2)
+  node[circle, fill, inner sep=1pt] {}
+  node[above right] {$f^\sharp_3$}
+  to[bend left]
+  node[midway, below] {$\gamma$}
+  (-2.7,0)
+  node[above] {\hspace{10pt}$\gamma(f^\sharp_3)$};
+  \draw[->, thick]
+  (3, -1)
+  node[circle, fill, inner sep=1pt] {}
+  node[below] {$f^\sharp_4$}
+  to[bend left]
+  node[midway, below] {$\gamma$}
+  (-3,-1);
+  \draw[dashed, thick]
+  (3.2, -.2)
+  to node[midway, right] {$\sqsubseteq$}
+  (3, -1);
+  \draw[dashed, thick]
+  (-2.7, 0)
+  to node[midway, left] {$\subseteq$}
+  (-3, -1)
+  node[below] {\hspace{-5pt}$\gamma(f^\sharp_4)$};
+\end{tikzpicture}
+% }
+
+%%% Local Variables:
+%%% mode: LaTeX
+%%% TeX-master: "../thesis"
+%%% TeX-command-extra-options: "-shell-escape"
+%%% End:

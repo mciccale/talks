@@ -1,0 +1,291 @@
+% -*- TeX-PDF-mode: t; IspellDict: english -*-
+\documentclass[aspectratio=169]{beamer}
+%
+\newcommand{\figPath}{figures}
+\newcommand{\imgPath}{images}
+%
+\input{preamble}
+\input{macros}
+%
+\title{Formal Semantics and its Approximation}
+\subtitle{An Introduction}
+%
+\author{\centering Marco Ciccal\`{e}\\{\fontfamily{cmtt}\selectfont\scriptsize marco.ciccale@imdea.org}}
+\date{\textbf{Aut.~Coffee} -- March 10, 2026}
+\institute{%
+  Universidad Politécnica de Madrid (UPM), Madrid Spain\\
+  IMDEA Software Institute, Madrid, Spain
+}
+%
+\begin{document}
+%
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+%
+\addtocounter{framenumber}{-1}
+%
+\section{Programs}
+
+\begin{frame}{Syntax}
+  \begin{itemize}
+  \item We will work with a simple imperative programming language.
+  \item We start by defining how programs must be \emph{written}.
+  \end{itemize}
+  %
+  \pause
+  %
+  \begin{block}{Syntax of expressions}
+    \vspace*{-2em}
+    \begin{flalign*}
+      \texttt{x}, \texttt{y}, \ldots \quad \in \quad \mathbb{V} && \text{variables}\\
+      \texttt{E} \quad \in \quad \mathbb{E} & \quad ::= \quad \texttt{1}~
+                                              |~\texttt{x}~
+                                              |~\texttt{E}_1 \texttt{ - } \texttt{E}_2
+                                            & \text{arithmentic expressions}\\
+                                            & \quad \quad| \;\;\:\quad \texttt{tt}~
+                                              |~\texttt{ff}~
+                                              |~\texttt{E}_1 \texttt{ < } \texttt{E}_2~
+                                              |~\texttt{E}_1 \texttt{ nand } \texttt{E}_2
+                                            & \text{Boolean expressions}
+    \end{flalign*}
+  \end{block}
+  %
+  \vspace{-1em}\pause
+  %
+  \begin{block}{Syntax of statements}
+    \vspace*{-2em}
+    \begin{align*}
+        \texttt{S} \quad \in \quad \mathbb{S} & \quad
+        ::= \quad \texttt{skip}~
+          |~\texttt{x := E}~
+          |~\texttt{S}_1 \texttt{; } \texttt{S}_2~
+          |~\texttt{\textbf{if} (E) \textbf{then }} \texttt{S}_1 \texttt{\bfseries~else } \texttt{S}_2~
+          |~\texttt{\textbf{while} (E) \textbf{do }} \texttt{S}
+    \end{align*}
+    \vspace*{-2em}
+  \end{block}
+  %
+  \begin{itemize}
+  \pause\item Purely \emph{syntactic} object, it has no \emph{meaning}
+    (\emph{i.e.}, no semantics) yet.
+  \pause\item Defined \emph{compositionally}, \emph{i.e.}, composite
+    elements such as \texttt{E}\textsubscript{1}\texttt{ - }\texttt{E}\textsubscript{2}
+    have a unique decomposition into \emph{strictly smaller} elements.
+  \end{itemize}
+\end{frame}
+%
+\begin{frame}{Semantics}
+  \begin{itemize}
+  \item We now turn our heads to the meaning of programs: \emph{semantics}.
+  \item Semantics can come in many different flavors, and they complement each other.
+  \end{itemize}
+  %
+  \pause\medskip
+  %
+  {\small\begin{minipage}[t]{.32\textwidth}
+    \begin{center}
+      \textbf{Operational\\\cite{plotkin-sopsem}}
+    \end{center}
+    %
+    \vspace{-.8em}
+    %
+    \begin{itemize}
+    \item Defines \emph{how} a program is executed.
+    \item \emph{Small-} or \emph{big-step} definitions.
+    \end{itemize}
+  \end{minipage}
+  %
+  \hfill
+  %
+  \begin{minipage}[t]{.32\textwidth}
+    \begin{center}
+      \textbf{Denotational\\\cite{scott71}}
+    \end{center}
+    %
+    \vspace{-.8em}
+    %
+    \begin{itemize}
+    \item Models the \emph{result} of executing a program.
+    \item \emph{Compositional} definitions.
+    \end{itemize}
+  \end{minipage}
+  %
+  \hfill
+  %
+  \begin{minipage}[t]{.32\textwidth}
+    \begin{center}
+      \textbf{Axiomatic\\\cite{hoare69}}
+    \end{center}
+    %
+    \vspace{-.8em}
+    %
+    \begin{itemize}
+    \item Allows to prove (partial) correctess of a program.
+    \item Assertion-based definitions.
+    \end{itemize}
+  \end{minipage}}
+  %
+  \pause\bigskip
+  %
+  \begin{itemize}
+  \item Herein, we concentrate in \emph{denotational} semantics, but
+    the approaches can be adapted to any semantics flavor.
+  \end{itemize}
+  %
+  % \item As \emph{numerals} (\emph{i.e.}, expressions) and
+  %   \emph{numbers} (\emph{i.e.,} mathematical, abstract objects)
+  %   differ, there is a distinction between the program itself and what
+  %   it \emph{denotes}.
+  % \end{itemize}
+\end{frame}
+%
+\begin{frame}{Denotational semantics: expressions}
+  \begin{itemize}
+  \item We consider the \emph{structure}
+    $\inter \triangleq ( \mathbb{Z}, \mathbb{B}; \supInter{1}, \supInter{\mathfrak{tt}}, \supInter{\mathfrak{ff}},
+    \supInter{-}, \supInter{<}, \supInter{\uparrow})$ with the usual interpretations.
+  \end{itemize}
+  %
+  \begin{block}{Denotational semantics of expressions}
+    $\pmb{\mathscr{E}} : \mathbb{V} \to (\texttt{E} \in \mathbb{E})
+    \to (\mathbb{V} \to \mathbb{Z} \cup \mathbb{B}) \rightharpoonup
+    \mathbb{Z} \cup \mathbb{B}
+    %
+    \text{\small~~~~~where } \mathbb{vars}(\texttt{E}) \subseteq
+    \mathbb{V}$\footnote{%
+      We use a dependent type to express that we require the
+      expression \texttt{E} to have all of its variables considered in the
+      (implicit) set of variables $\mathbb{V}$.  A more detailed discussion on
+      this matter can be found in~\cite{Cousot21-book}.% 
+    }
+    %
+    \pause\begin{flalign*}
+    \hspace*{-.5em}\begin{array}{lllll}
+      \esem{\texttt{k}} \sigma
+      &\triangleq
+      &k
+      &\in \mathbb{Z} \cup \mathbb{B}
+      &\\[.5em]
+      %
+      \esem{\texttt{x}} \sigma
+      &\triangleq
+      &\sigma(\texttt{x})
+      &\in \mathbb{Z} \cup \mathbb{B}
+      &\\[.5em]
+      %
+      \esem{\texttt{E}_1 \texttt{ - } \texttt{E}_2} \sigma
+      &\triangleq
+      &v_1 \supInter{-} v_2
+      &\in \mathbb{Z}
+      &\text{%
+        if $v_1 = \esem{\texttt{E}_1}\sigma \in \mathbb{Z}$,
+           $v_2 = \esem{\texttt{E}_2}\sigma \in \mathbb{Z}$
+      }\\[.5em]
+      %
+      \esem{\texttt{E}_1 \texttt{ < } \texttt{E}_2} \sigma
+      &\triangleq
+      &v_1 \supInter{<} v_2
+      &\in \mathbb{B}
+      &\text{%
+        if $v_1 = \esem{\texttt{E}_1}\sigma \in \mathbb{Z}$,
+           $v_2 = \esem{\texttt{E}_2}\sigma \in \mathbb{Z}$
+      }\\[.5em]
+      %
+      \esem{\texttt{E}_1 \texttt{ nand } \texttt{E}_2} \sigma
+      &\triangleq
+      &v_1 \supInter{\uparrow} v_2
+      &\in \mathbb{B}
+      &\text{%
+       if $v_1 = \esem{\texttt{E}_1}\sigma \in \mathbb{E}$,
+           $v_2 = \esem{\texttt{E}_2}\sigma \in \mathbb{E}$
+      }\\[.5em]
+      %
+      undefined &&&& otherwise
+    \end{array}&&
+    \end{flalign*}
+  \end{block}
+\end{frame}
+%
+%
+\begin{frame}{Denotational semantics: statements}
+  \begin{itemize}
+  \item Now, we turn our heads to statements.
+  \end{itemize}
+  %
+  \begin{block}{Denotational semantics of statements}
+    $\pmb{\mathscr{S}} : \mathbb{V} \to (\texttt{S} \in \mathbb{S})
+    \to (\mathbb{V} \to \mathbb{Z} \cup \mathbb{B}) \rightharpoonup
+    (\mathbb{V} \to \mathbb{Z} \cup \mathbb{B})
+    %
+    \text{\small~~~~~where } \mathbb{vars}(\texttt{E}) \subseteq
+    \mathbb{V}$
+    %
+    \pause\begin{flalign*}
+    \hspace*{-.5em}\begin{array}{llll}
+      \ssem{\texttt{skip}} \sigma
+      &\triangleq
+      &\sigma
+      &\\[.5em]
+      %
+      \ssem{\texttt{x := E}} \sigma
+      &\triangleq
+      &\sigma[v/\texttt{x}]
+      &\text{%
+        if $v = \esem{\texttt{E}}\sigma$
+      }\\[.5em]
+      %
+      \ssem{\texttt{S}_1 \texttt{; } \texttt{S}_2}
+      &\triangleq
+      &\ssem{\texttt{S}_2} \circ \ssem{\texttt{S}_1}
+      &\\[2em]
+      %
+      \ssem{\texttt{\textbf{if} (E) \textbf{then }} \texttt{S}_1 \texttt{\bfseries~else } \texttt{S}_2} \sigma
+      &\triangleq
+      &\begin{cases}
+        \ssem{\texttt{S}_1} \sigma & \text{if } \esem{\texttt{E}} \sigma = \supInter{\mathfrak{tt}}\\
+        \ssem{\texttt{S}_2} \sigma & \text{if } \esem{\texttt{E}} \sigma = \supInter{\mathfrak{ff}}\\
+        undefined & otherwise
+      \end{cases}
+      &\\[.5em]
+    \end{array}&&
+    \end{flalign*}
+  \end{block}
+\end{frame}
+%
+\begin{frame}{Denotational semantics: loops}
+  \begin{itemize}
+  \item Loops are trickier...
+  \end{itemize}
+  %
+  \begin{flalign*}
+    \hspace*{-.5em}\begin{array}{lll}
+      \ssem{\texttt{\textbf{while} (E) \textbf{do} S}} \sigma
+      &\triangleq
+      &\begin{cases}
+        \sigma & \text{if } \esem{\texttt{E}} \sigma = \supInter{\mathfrak{ff}}\\
+        (\ssem{\texttt{\textbf{while} (E) \textbf{do} S}} \circ \ssem{\texttt{S}}) \sigma & \text{if } \esem{\texttt{E}} \sigma = \supInter{\mathfrak{tt}}\\
+        undefined & otherwise
+      \end{cases}
+    \end{array}&&
+  \end{flalign*}
+\end{frame}
+%
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+%
+\addtocounter{framenumber}{-1}
+%
+\begin{frame}[allowframebreaks]{References}
+  \scriptsize
+  \bibliographystyle{apalike}
+  \bibliography{../../clip/bibtex/clip/clip.bib,../../clip/bibtex/clip/general.bib,bib.bib}
+\end{frame}
+%
+\end{document}
+
+%%% Local Variables:
+%%% mode: LaTeX
+%%% TeX-master: t
+%%% End:
