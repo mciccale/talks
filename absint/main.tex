@@ -207,7 +207,7 @@
   \end{block}
 \end{frame}
 %
-\begin{frame}[fragile]{Denotational semantics: expressions (example)}
+\begin{frame}{Denotational semantics: expressions (example)}
   The expression ``\texttt{(x-1) < (y-1) nand ff}'' under
   $\sigma=\{\texttt{x} \mapsto 3,\texttt{y} \mapsto 2\}$ evaluates to:
   %
@@ -220,7 +220,7 @@
     \quad&=\quad (3 \supInter{-} \supInter{1}) \supInter{<} (2 \supInter{-} \supInter{1}) \supInter{\uparrow} \supInter{\mathfrak{ff}}\\
     \quad&=\quad 2 \supInter{<} \supInter{1} \supInter{\uparrow} \supInter{\mathfrak{ff}}\\
     \quad&=\quad \supInter{\mathfrak{ff}} \supInter{\uparrow} \supInter{\mathfrak{ff}}\\
-    \quad&=\quad \supInter{\mathfrak{ff}}
+    \quad&=\quad \supInter{\mathfrak{tt}}
   \end{flalign*}
   %
 \end{frame}
