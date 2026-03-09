@@ -143,7 +143,7 @@
 \begin{frame}{Denotational semantics: expressions}
   \begin{itemize}
   \item We consider the \emph{structure}
-    $\inter \triangleq ( \mathbb{Z}, \mathbb{B}; \supInter{1}, \supInter{\mathfrak{tt}}, \supInter{\mathfrak{ff}},
+    $(\mathbb{Z}, \mathbb{B}; \supInter{1}, \supInter{\mathfrak{tt}}, \supInter{\mathfrak{ff}},
     \supInter{-}, \supInter{<}, \supInter{\uparrow})$ with the usual interpretations.
   \end{itemize}
   %
@@ -207,6 +207,23 @@
   \end{block}
 \end{frame}
 %
+\begin{frame}[fragile]{Denotational semantics: expressions (example)}
+  The expression ``\texttt{(x-1) < (y-1) nand ff}'' under
+  $\sigma=\{\texttt{x} \mapsto 3,\texttt{y} \mapsto 2\}$ evaluates to:
+  %
+  \begin{flalign*}
+    \esem{\texttt{(x-1) < (y-1) nand ff}} \sigma
+    \quad&=\quad \esem{\texttt{(x-1) < (y-1)}}\sigma \supInter{\uparrow} \esem{\texttt{ff}}\sigma\\
+    \quad&=\quad \esem{\texttt{(x-1)}}\sigma \supInter{<} \esem{\texttt{(y-1)}}\sigma \supInter{\uparrow} \esem{\texttt{ff}}\sigma\\
+    \quad&=\quad (\esem{\texttt{x}}\sigma \supInter{-} \esem{\texttt{1}}\sigma) \supInter{<} \esem{\texttt{y-1}}\sigma \supInter{\uparrow} \esem{\texttt{ff}}\sigma\\
+    \quad&=\quad (\esem{\texttt{x}}\sigma \supInter{-} \esem{\texttt{1}}\sigma) \supInter{<} (\esem{\texttt{y}}\sigma \supInter{-} \esem{\texttt{1}}\sigma) \supInter{\uparrow} \esem{\texttt{ff}}\sigma\\
+    \quad&=\quad (3 \supInter{-} \supInter{1}) \supInter{<} (2 \supInter{-} \supInter{1}) \supInter{\uparrow} \supInter{\mathfrak{ff}}\\
+    \quad&=\quad 2 \supInter{<} \supInter{1} \supInter{\uparrow} \supInter{\mathfrak{ff}}\\
+    \quad&=\quad \supInter{\mathfrak{ff}} \supInter{\uparrow} \supInter{\mathfrak{ff}}\\
+    \quad&=\quad \supInter{\mathfrak{ff}}
+  \end{flalign*}
+  %
+\end{frame}
 %
 \begin{frame}{Denotational semantics: statements}
   \begin{itemize}
@@ -218,7 +235,7 @@
     \to (\mathbb{V} \to \mathbb{Z} \cup \mathbb{B}) \rightharpoonup
     (\mathbb{V} \to \mathbb{Z} \cup \mathbb{B})
     %
-    \text{\small~~~~~where } \mathbb{vars}(\texttt{E}) \subseteq
+    \text{\small\itshape~where } \mathbb{vars}(\texttt{E}) \subseteq
     \mathbb{V}$
     %
     \pause\begin{flalign*}
@@ -254,18 +271,168 @@
 \end{frame}
 %
 \begin{frame}{Denotational semantics: loops}
-  \begin{itemize}
-  \item Loops are trickier...
-  \end{itemize}
-  %
   \begin{flalign*}
     \hspace*{-.5em}\begin{array}{lll}
       \ssem{\texttt{\textbf{while} (E) \textbf{do} S}} \sigma
       &\triangleq
       &\begin{cases}
         \sigma & \text{if } \esem{\texttt{E}} \sigma = \supInter{\mathfrak{ff}}\\
-        (\ssem{\texttt{\textbf{while} (E) \textbf{do} S}} \circ \ssem{\texttt{S}}) \sigma & \text{if } \esem{\texttt{E}} \sigma = \supInter{\mathfrak{tt}}\\
+        (\ssem{\texttt{\only<2->{\color{red}}\textbf{while} (E) \textbf{do} S}} \circ \ssem{\texttt{S}}) \sigma & \text{if } \esem{\texttt{E}} \sigma = \supInter{\mathfrak{tt}}\\
         undefined & otherwise
+      \end{cases}
+    \end{array}&&
+  \end{flalign*}
+  %
+  \begin{itemize}
+  \pause\item \emph{\color{red}Recursive} definition!  \emph{E.g.}, $x = x + 1$.
+  \pause\item We need to make sure that:
+    \begin{enumerate}
+    \item The equation above has (at least) one solution.
+    \item If the equation has a solution, we must take the \emph{most precise} one.
+    \end{enumerate}
+  \pause\item And, for this, we use \emph{fixpoints} on \emph{posets}.
+  \end{itemize}
+  %
+\end{frame}
+%
+\begin{frame}{Posets \& fixpoints: recap}
+  \vspace*{-1em}
+  \begin{itemize}
+  \item We start by defining a poset $(\mathcal{D},\leq_{\mathcal{D}})$ with:
+    %
+    \begin{flalign*}
+    \mathcal{D} &\triangleq \mathbb{Z} \cup \mathbb{B} \cup \{\bot\},\tag*{\scriptsize\color{gray} (values + undefined)}\\
+    x \leq_{\mathcal{D}} y &\triangleq x = \bot \vee x = y.\tag*{\scriptsize\color{gray} (information order on values)}
+    \end{flalign*}
+    %
+    That is, we add a bottom-most element $\bot$, the \emph{undefined}
+    value and we define a \emph{flat order}, yielding a nicely
+    structured poset: directed-complete, and finite chains.
+  \end{itemize}
+  %
+  \begin{center}
+  \begin{tikzpicture}[node distance=.3cm]
+    \node (bot) {$\bot$};
+    \node (dots) [above=of bot] {$\ldots$};
+    \node (two) [left=of dots] {$2$};
+    \node (one) [left=of two] {$1$};
+    \node (tt) [right=of dots] {$\supInter{\mathfrak{tt}}$};
+    \node (ff) [right=of tt] {$\supInter{\mathfrak{ff}}$};
+    \draw (bot) -- (one);
+    \draw (bot) -- (two);
+    \draw (bot) -- (tt);
+    \draw (bot) -- (ff);
+  \end{tikzpicture}
+  \end{center}
+  %
+  \begin{itemize}
+    \pause\item Similarly, we define the poset $(\mathcal{T},\leq_{\mathcal{T}})$
+    with:
+    %
+    \begin{flalign*}
+    \mathcal{T} &\triangleq ((\mathbb{V} \to \mathbb{Z} \cup \mathbb{B}) \cup \{\bot\}) \to ((\mathbb{V} \to \mathbb{Z} \cup \mathbb{B}) \cup \{\bot\}),\tag*{\scriptsize\color{gray} (total, continuous transformers)}\\
+      f \leq_{\mathcal{T}} g &\triangleq \forall \sigma \in (\mathbb{V} \to \mathbb{Z} \cup \mathbb{B}) \cup \{\bot\}\;\pmb{:}\; f(\sigma) \; \dot{\leq}_{\mathcal{D}} \; g(\sigma).\tag*{\scriptsize\color{gray} (information order on transformers)}
+    \end{flalign*}
+    %
+    Where $\dot{\leq}_{\mathcal{D}}$ is the \emph{point-wise extension} of $\leq_{\mathcal{D}}$ to states and
+    $\pmb{\lambda}\sigma\pmb{.}\; \bot$ is the bottom-most element.
+    %
+    This poset preserves all the nice properties of the one above.
+  \end{itemize}
+\end{frame}
+%
+\begin{frame}{Posets \& fixpoints: recap (cont'd)}
+  \begin{itemize}
+  \item A poset $(\mathcal{T},\leq_{\mathcal{T}})$ is a
+    \emph{directed-complete partial order} (dcpo) if all of its
+    directed subsets $D$ have a supremum $\vee_{\mathcal{T}}D$.
+  \pause\item A function $f$ is \emph{Scott-continuous} if it preserves all directed
+    suprema.
+    %
+    That is,
+    $\forall D \subseteq \mathcal{T},~directed\;\pmb{:}\;f(\vee_{\mathcal{T}}D)
+    = \vee_{\mathcal{T}}\{f(x)\;\pmb{:}\;x \in D\}.$
+  \end{itemize}
+  \pause\begin{theorem}[Kleene's theorem]
+    Given a $\mathrm{directed}$-$\mathrm{complete~partial~order}$
+    (dcpo) $(\mathcal{T},\leq_{\mathcal{T}})$, and a
+    $\mathrm{Scott}$-$\mathrm{continuous~function}$
+    $f : \mathcal{T} \to \mathcal{T}$, $f$ has a
+    $\mathrm{least~fixpoint}$, which is the supremum:
+    %
+    \(
+      \pmb{lfp}_{\leq_{\mathcal{T}}} f = \vee_{\mathcal{T}} \{f^n(\bot)\;\pmb{:}\;n < \omega\}
+    \)
+    %
+    of the ascending
+    Kleene chain:
+    %
+    \(
+      f^0(\bot) \leq_{\mathcal{T}} f^1(\bot) \leq_{\mathcal{T}} f^2(\bot) \leq_{\mathcal{T}} \ldots \leq_{\mathcal{T}} f^n(\bot) \leq_{\mathcal{T}} \ldots
+    \)
+  \end{theorem}
+  %
+  \bigskip
+  %
+  \pause So, our goal now is to make our denotational semantics function
+  $\pmb{\mathscr{S}}$ to ``fit'' in this setting.
+\end{frame}
+%
+\begin{frame}{Loop fixpoint semantics}
+  \begin{enumerate}
+  \item Extend the definitions of $\pmb{\mathscr{E}}$ and $\pmb{\mathscr{S}}$ with
+    $\bot$ in the co-domain to model ``undefined'' behavior and turn them into \emph{total functions}:
+    %
+    \[
+      \pmb{\mathscr{S}} : \mathbb{V} \to (\texttt{S} \in \mathbb{S})
+      \to (\mathbb{V} \to \mathbb{Z} \cup \mathbb{B})\;{\color{MyPurple}\to}\;
+      (\mathbb{V} \to \mathbb{Z} \cup \mathbb{B}) \cup \{{\color{MyPurple}\bot}\}
+      %
+      \text{\small\it~where } \mathbb{vars}(\texttt{E}) \subseteq
+      \mathbb{V}.
+    \]
+  \pause\item Make them composable (\emph{i.e.}, domain $=$ co-domain) by allowing
+    $\bot$ in the domain:
+    %
+    \[
+      \pmb{\mathscr{S}} : \mathbb{V} \to (\texttt{S} \in \mathbb{S})
+      \to (\mathbb{V} \to \mathbb{Z} \cup \mathbb{B}) \cup \{{\color{MyPurple}\bot}\} \to
+      (\mathbb{V} \to \mathbb{Z} \cup \mathbb{B}) \cup \{\bot\}
+      %
+      \text{\small\it~where } \mathbb{vars}(\texttt{E}) \subseteq
+      \mathbb{V}.
+    \]
+  \pause\item Prove that
+    $\ssem{\texttt{\_}} : (\mathbb{V} \to \mathbb{Z} \cup \mathbb{B})
+    \cup \{\bot\} \to (\mathbb{V} \to \mathbb{Z} \cup \mathbb{B}) \cup
+    \{\bot\}$ is \emph{Scott-continuous}.\\
+    {\small\color{gray}(Sketch: by structural induction on the program's syntax)}
+  \end{enumerate}
+\end{frame}
+%
+\begin{frame}{Loop fixpoint semantics (cont'd)}
+  %
+  Now, we can express the solution to the \texttt{\bfseries while}'s (semantic)
+  equation as the \emph{least fixpoint} (\emph{i.e.}, most-precise for
+  the information order) of the \emph{functional} $F$:
+  %
+  \begin{flalign*}
+    \hspace*{-.5em}\begin{array}{lll}
+      \ssem{\texttt{\textbf{while} (E) \textbf{do} S}} \sigma
+      &\triangleq
+      &\pmb{lfp}_{\leq_{\mathcal{T}}} F
+    \end{array}&&
+  \end{flalign*}
+  %
+  \vspace*{-2em}
+  %
+  \begin{flalign*}
+    \hspace*{-.5em}\begin{array}{lll}
+      \textit{where} &F : ((\mathbb{V} \to \mathbb{Z} \cup \mathbb{B}) \cup \{\bot\}) \to ((\mathbb{V} \to \mathbb{Z} \cup \mathbb{B}) \cup \{\bot\}),\\[1em]
+      &F(f)(\sigma) = \begin{cases}
+        \sigma & \text{if } \esem{\texttt{E}} \sigma = \supInter{\mathfrak{ff}}\\
+        f(\ssem{\texttt{S}}\sigma) & \text{if } \esem{\texttt{E}} \sigma = \supInter{\mathfrak{tt}}\\
+        \bot & otherwise
       \end{cases}
     \end{array}&&
   \end{flalign*}
