@@ -518,34 +518,14 @@
   \end{flalign*}
 \end{frame}
 %
-\begin{frame}{Loop fixpoint semantics: example}
-  %
-  \vspace{\fill}
-  %
-  foo
+\section{(Semantic) Program Properties}
+\begin{frame}{Program properties}
+  \begin{itemize}
+  \item See chapter 8 of Cousot's book on properties.
+  \end{itemize}
 \end{frame}
 %
-\begin{frame}{Loop fixpoint semantics: example}
-  %
-  \vspace{\fill}
-  %
-  foo
-\end{frame}
-%   \begin{itemize}
-%     \item $F^0(\pmb{\lambda}\sigma\pmb{.}\;\bot)(\sigma) = \bot$
-%     \pause\item $F^1(\pmb{\lambda}\sigma\pmb{.}\;\bot)(\sigma) = \begin{cases}
-%       \sigma & \text{if } \esem{\texttt{0 < n}} \sigma = \supInter{\mathfrak{ff}}\\
-%       % (f \circ \ssem{\texttt{S}}) \sigma & \text{if } \esem{\texttt{E}} \sigma = \supInter{\mathfrak{tt}}\\
-%       \bot & otherwise
-%       \end{cases}$
-%     \pause\item $F^2(\pmb{\lambda}\sigma\pmb{.}\;\bot)(\sigma) = \begin{cases}
-%       \sigma & \text{if } \esem{\texttt{0 < n}} \sigma = \supInter{\mathfrak{ff}}\\
-%       (\ssem{\texttt{S}} \circ \ssem{\texttt{S}}) \sigma & \text{if } (\esem{\texttt{n < 0}} \circ \ssem{S} \circ \ssem{S}) \sigma = \supInter{\mathfrak{ff}}\\
-%       \ssem{\texttt{S}} \sigma & \text{if } (\esem{\texttt{n < 0}} \circ \ssem{S}) \sigma = \supInter{\mathfrak{ff}}\\
-%       \bot & otherwise
-%       \end{cases}$
-%   \end{itemize}
-% \end{frame}
+\section{Abstract Interpretation}
 %
 \begin{frame}[plain]
   \titlepage
