@@ -146,12 +146,12 @@
     $(\mathbb{Z}, \mathbb{B}; \supInter{1}, \supInter{\mathfrak{tt}}, \supInter{\mathfrak{ff}},
     \supInter{-}, \supInter{<}, \supInter{\uparrow})$ with the usual interpretations.
   \item And, for brevity, let $\mathbb{I} \triangleq \mathbb{Z} \cup \mathbb{B}$, and
-    $\mathbb{Env} \triangleq \mathbb{V} \to \mathbb{I}$.
+    $\mathbb{Ev} \triangleq \mathbb{V} \to \mathbb{I}$.
   \end{itemize}
   %
   \begin{block}{Denotational semantics of expressions}
     $\pmb{\mathscr{E}} : \mathbb{V} \to (\texttt{E} \in \mathbb{E})
-    \to \mathbb{Env} \rightharpoonup \mathbb{I}
+    \to \mathbb{Ev} \rightharpoonup \mathbb{I}
     %
     \text{\small\itshape~where } \mathbb{vars}(\texttt{E}) \subseteq
     \mathbb{V}$\footnote{%
@@ -234,7 +234,7 @@
   %
   \begin{block}{Denotational semantics of statements}
     $\pmb{\mathscr{S}} : \mathbb{V} \to (\texttt{S} \in \mathbb{S})
-    \to \mathbb{Env} \rightharpoonup \mathbb{Env}
+    \to \mathbb{Ev} \rightharpoonup \mathbb{Ev}
     %
     \text{\small\itshape~where } \mathbb{vars}(\texttt{S}) \subseteq
     \mathbb{V}$
@@ -250,12 +250,12 @@
       &\triangleq
       &\sigma[v/\texttt{x}]
       &\text{%
-        if $v = \esem{\texttt{E}}\sigma$
+        if $\esem{\texttt{E}}\sigma = v$
       }\\[.5em]
       %
-      \ssem{\texttt{S}_1 \texttt{; } \texttt{S}_2}
+      \ssem{\texttt{S}_1 \texttt{; } \texttt{S}_2} \sigma
       &\triangleq
-      &\ssem{\texttt{S}_2} \circ \ssem{\texttt{S}_1}
+      &(\ssem{\texttt{S}_2} \circ \ssem{\texttt{S}_1}) \sigma
       &\\[2em]
       %
       \ssem{\texttt{\textbf{if} (E) \textbf{then }} \texttt{S}_1 \texttt{\bfseries~else } \texttt{S}_2} \sigma
@@ -285,13 +285,13 @@
   \end{flalign*}
   %
   \begin{itemize}
-  \pause\item \emph{\color{red}Recursive} definition!  \emph{E.g.}, $x = x + 1$.
+  \pause\item \emph{\color{red}Recursive} definition!
   \pause\item We need to make sure that:
     \begin{enumerate}
     \item The equation above has (at least) one solution.
     \item If the equation has a solution, we must take the \emph{most precise} one.
     \end{enumerate}
-  \pause\item And, for this, we use \emph{fixpoints} on \emph{posets}.
+  \pause\item And, for this, we use \emph{fixpoints} on \emph{posets} with \emph{information orders}.
   \end{itemize}
   %
 \end{frame}
@@ -301,10 +301,10 @@
   \begin{itemize}
   \item We start by defining a poset $(\mathcal{I},\leq_{\mathcal{I}})$ with:
     %
-    \begin{flalign*}
-    \mathcal{I} &\triangleq \mathbb{I} \cup \{\bot\},\tag*{\scriptsize\color{gray} (values + undefined)}\\
+    \begin{align*}
+    \mathcal{I} &\triangleq \mathbb{I}_\bot,\tag*{\scriptsize\color{gray} (values + undefined: $\mathbb{I} \cup \bot$)}\\
     x \leq_{\mathcal{I}} y &\triangleq x = \bot \vee x = y.\tag*{\scriptsize\color{gray} (information order on values)}
-    \end{flalign*}
+    \end{align*}
     %
     That is, we add a bottom-most element $\bot$, the \emph{undefined}
     value and we define a \emph{flat order}, yielding a nicely
@@ -330,12 +330,12 @@
     \pause\item Similarly, we define the poset $(\mathcal{T},\leq_{\mathcal{T}})$
     with:
     %
-    \begin{flalign*}
-    \mathcal{T} &\triangleq \mathbb{Env} \cup \{\bot\} \to \mathbb{Env} \cup \{\bot\},\tag*{\scriptsize\color{gray} (total, continuous transformers)}\\
-      f \leq_{\mathcal{T}} g &\triangleq \forall \sigma\:\pmb{:}\: f(\sigma) \; \dot{\leq}_{\mathcal{I}} \; g(\sigma).\tag*{\scriptsize\color{gray} (information order on transformers)}
-    \end{flalign*}
+    \begin{align*}
+    \mathcal{T} &\triangleq \mathbb{Ev}_\bot \to \mathbb{Ev}_\bot,\tag*{\scriptsize\color{gray} (total, continuous state transformers)}\\
+      f \leq_{\mathcal{T}} g &\triangleq \forall \sigma\:\pmb{:}\: f(\sigma) \; \dot{\leq}_{\mathcal{I}} \; g(\sigma).\tag*{\scriptsize\color{gray} (information order on state transformers)}
+    \end{align*}
     %
-    Where $\dot{\leq}_{\mathcal{I}}$ is the \emph{point-wise extension} of $\leq_{\mathcal{I}}$ to states and
+    Where $\dot{\leq}_{\mathcal{I}}$ is the \emph{point-wise extension} of $\leq_{\mathcal{I}}$ to states, and
     $\pmb{\lambda}\sigma\pmb{.}\; \bot$ is the bottom-most element.
     %
     This poset preserves all the nice properties of the one above.
@@ -343,37 +343,45 @@
 \end{frame}
 %
 \begin{frame}{Posets \& fixpoints: recap (cont'd)}
+  \vspace*{-1em}
+  %
   \begin{itemize}
-  \item A poset $(\mathcal{T},\leq_{\mathcal{T}})$ is a
-    \emph{directed-complete partial order} (dcpo) if all of its
-    directed subsets $D$ have a supremum $\vee_{\mathcal{T}}D$.
-  \pause\item A function $f$ is \emph{Scott-continuous} if it preserves all directed
+  \item In out context:
+  \item the poset $(\mathcal{T},\leq_{\mathcal{T}})$ is a
+    \emph{directed-complete partial order} (dcpo) since all of its
+    directed subsets have a supremum.
+    %
+    That is, $\forall D \subseteq \mathcal{T},~directed\;\pmb{:}\;\vee_{\mathcal{T}}D \in \mathcal{T}$; and,
+  \pause\item a function $F$ is \emph{Scott-continuous} if it preserves all directed
     suprema.
     %
     That is,
-    $\forall D \subseteq \mathcal{T},~directed\;\pmb{:}\;f(\vee_{\mathcal{T}}D)
-    = \vee_{\mathcal{T}}\{f(x)\;\pmb{:}\;x \in D\}.$
+    $\forall D \subseteq \mathcal{T},~directed\;\pmb{:}\;F(\vee_{\mathcal{T}}D)
+    = \vee_{\mathcal{T}}\{F(f)\;\pmb{:}\;f \in D\}.$
   \end{itemize}
   \pause\begin{theorem}[Kleene's theorem]
     Given a $\mathrm{directed}$-$\mathrm{complete~partial~order}$
     (dcpo) $(\mathcal{T},\leq_{\mathcal{T}})$, and a
     $\mathrm{Scott}$-$\mathrm{continuous~function}$
-    $f : \mathcal{T} \to \mathcal{T}$, $f$ has a
+    $F : \mathcal{T} \to \mathcal{T}$, $f$ has a
     $\mathrm{least~fixpoint}$, which is the supremum:
     %
     \[
-      \pmb{lfp}_{\leq_{\mathcal{T}}} f = \vee_{\mathcal{T}} \{f^n(\pmb{\lambda}\sigma\pmb{.}\;\bot)\;\pmb{:}\;n < \omega\}
+      \pmb{lfp}_{\leq_{\mathcal{T}}} F = \vee_{\mathcal{T}} \{F^n(\pmb{\lambda}\sigma\pmb{.}\;\bot)\;\pmb{:}\;n < \omega\}
     \]
     %
     of the ascending
     Kleene chain:
     %
     \[
-      f^0(\pmb{\lambda}\sigma\pmb{.}\;\bot) \leq_{\mathcal{T}} f^1(\pmb{\lambda}\sigma\pmb{.}\;\bot) \leq_{\mathcal{T}} f^2(\pmb{\lambda}\sigma\pmb{.}\;\bot) \leq_{\mathcal{T}} \ldots \leq_{\mathcal{T}} f^n(\pmb{\lambda}\sigma\pmb{.}\;\bot) \leq_{\mathcal{T}} \ldots \tag*{$\triangleleft$}
+      F^0(\pmb{\lambda}\sigma\pmb{.}\;\bot) \leq_{\mathcal{T}}
+      F^1(\pmb{\lambda}\sigma\pmb{.}\;\bot) \leq_{\mathcal{T}}
+      F^2(\pmb{\lambda}\sigma\pmb{.}\;\bot) \leq_{\mathcal{T}}
+      \ldots \leq_{\mathcal{T}}
+      F^n(\pmb{\lambda}\sigma\pmb{.}\;\bot) \leq_{\mathcal{T}}
+      \ldots
     \]
   \end{theorem}
-  %
-  \vspace*{-1ex}
   %
   \pause So, our goal now is to make our denotational semantics function
   $\pmb{\mathscr{S}}$ to ``fit'' in this setting.
@@ -386,8 +394,8 @@
     %
     \[
       \pmb{\mathscr{S}} : \mathbb{V} \to (\texttt{S} \in \mathbb{S})
-      \to \mathbb{Env}\;{\color{MyPurple}\to}\;
-      \mathbb{Env} \cup \{{\color{MyPurple}\bot}\}
+      \to \mathbb{Ev}\;{\color{MyPurple}\to}\;
+      {\color{MyPurple}\mathbb{Ev}_\bot}
       %
       \text{\small\it~where } \mathbb{vars}(\texttt{S}) \subseteq
       \mathbb{V}.
@@ -397,16 +405,15 @@
     %
     \[
       \pmb{\mathscr{S}} : \mathbb{V} \to (\texttt{S} \in \mathbb{S})
-      \to \mathbb{Env} \cup \{{\color{MyPurple}\bot}\} \to
-      \mathbb{Env} \cup \{\bot\}
+      \to {\color{MyPurple}\mathbb{Ev}_\bot} \to
+      \mathbb{Ev}_\bot
       %
       \text{\small\it~where } \mathbb{vars}(\texttt{S}) \subseteq
       \mathbb{V}.
     \]
     \pause\item Prove that
-    $\ssem{\texttt{\_}} : \mathbb{Env} \cup \{\bot\} \to \mathbb{Env}
-    \cup
-    \{\bot\}$ is \emph{Scott-continuous}.\\
+    $\ssem{\texttt{\_}} : \mathbb{Ev}_\bot \to \mathbb{Ev}_\bot$
+    is \emph{Scott-continuous}.\\
     {\small\color{gray}(Sketch: by structural induction on the
       program's syntax)}
   \end{enumerate}
@@ -430,7 +437,8 @@
   %
   \begin{flalign*}
     \hspace*{-.5em}\begin{array}{lll}
-      \textit{where} &F : (\mathbb{Env} \cup \{\bot\} \to \mathbb{Env} \cup \{\bot\}) \to (\mathbb{Env} \cup \{\bot\} \to \mathbb{Env} \cup \{\bot\}),\qquad\qquad\text{\small\color{gray} (or, $F : \mathcal{T} \to \mathcal{T}$)}\\[1em]
+      \textit{where} &F : (\mathbb{Ev}_\bot \to \mathbb{Ev}_\bot) \to (\mathbb{Ev}_\bot \to \mathbb{Ev}_\bot),
+      \hspace*{15em}\text{\small\color{gray} (or, $F : \mathcal{T} \to \mathcal{T}$)}\\[1em]
       &F(f)(\sigma) = \begin{cases}
         \sigma & \text{if } \esem{\texttt{E}} \sigma = \supInter{\mathfrak{ff}}\\
         (f \circ \ssem{\texttt{S}}) \sigma & \text{if } \esem{\texttt{E}} \sigma = \supInter{\mathfrak{tt}}\\
@@ -458,7 +466,7 @@
       \end{cases}
     \]
     %
-    by building the chain $F^0(\pmb{\lambda}\sigma\pmb{.}\;\bot) \leq_{\mathcal{T}} F^1(\pmb{\lambda}\sigma\pmb{.}\;\bot) \leq_{\mathcal{T}} F^2(\pmb{\lambda}\sigma\pmb{.}\;\bot) \leq_{\mathcal{T}} \ldots \leq_{\mathcal{T}} \ldots$
+    by building the Kleene ascending chain $F^0(\pmb{\lambda}\sigma\pmb{.}\;\bot) \leq_{\mathcal{T}} F^1(\pmb{\lambda}\sigma\pmb{.}\;\bot) \leq_{\mathcal{T}} F^2(\pmb{\lambda}\sigma\pmb{.}\;\bot) \leq_{\mathcal{T}} \ldots$
   \end{itemize}
 \end{frame}
 %
