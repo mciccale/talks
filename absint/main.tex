@@ -149,6 +149,8 @@
     $\mathbb{Ev} \triangleq \mathbb{V} \to \mathbb{I}$.
   \end{itemize}
   %
+  \pause
+  %
   \begin{block}{Denotational semantics of expressions}
     $\pmb{\mathscr{E}} : \mathbb{V} \to (\texttt{E} \in \mathbb{E})
     \to \mathbb{Ev} \rightharpoonup \mathbb{I}
@@ -161,7 +163,7 @@
       this matter can be found in~\cite{Cousot21-book}.%
     }
     %
-    \pause\begin{flalign*}
+    \begin{flalign*}
     \hspace*{-.5em}\begin{array}{lllll}
       \esem{\texttt{k}} \sigma
       &\triangleq
@@ -351,8 +353,12 @@
     \emph{directed-complete partial order} (dcpo) since all of its
     directed subsets have a supremum.
     %
-    That is, $\forall D \subseteq \mathcal{T},~directed\;\pmb{:}\;\vee_{\mathcal{T}}D \in \mathcal{T}$; and,
-  \pause\item a function $F$ is \emph{Scott-continuous} if it preserves all directed
+    That is,
+    $\forall D \subseteq
+    \mathcal{T},~directed\;\pmb{:}\;\vee_{\mathcal{T}}D \in
+    \mathcal{T}$; and,
+  \pause\item a function $F$ is \emph{Scott-continuous} in a poset
+    $(\mathcal{T},\leq_{\mathcal{T}})$ if it preserves all directed
     suprema.
     %
     That is,
@@ -529,10 +535,25 @@
   \end{flalign*}
 \end{frame}
 %
-\section{(Semantic) Program Properties}
-\begin{frame}{Program properties}
+\section{Program Properties}
+\begin{frame}{Program semantic properties: properties as sets}
   \begin{itemize}
-  \item See chapter 8 of Cousot's book on properties.
+  \item We consider program \emph{semantic} properties to be a property
+    of the denotational semantics $\ssem{\texttt{P}} \in \mathbb{Ev}_\bot \to \mathbb{Ev}_\bot$
+    of a program \texttt{P}.
+  \item More concretely, by a \emph{property} we mean the \emph{set}
+    of objects that have this property.
+  \item Herein, $\wp(\mathbb{Ev}_\bot)$ is the \emph{domain} of properties.
+    %
+    So, if $P$ is a property, then $P \in \wp(\mathbb{Ev}_\bot)$, and
+    a state $\sigma \in \mathbb{Ev}_\bot$ has the property $P$ iff
+    $\sigma \in P$.
+  \item $\text{\O}$ is the \emph{strongest} property.  \hfill {\small\color{gray}(false)}
+  \item $\mathbb{Ev}_\bot$ is the \emph{weakest} property.  \hfill {\small\color{gray}(true)}
+  \item $\subseteq$ is \emph{implication}.  \hfill {\small\color{gray}($\to$)}
+  \item $\cup$ is \emph{disjunction}.  \hfill {\small\color{gray}($\vee$)}
+  \item $\cap$ is \emph{intersection}.  \hfill {\small\color{gray}($\cap$)}
+  \item We have a \emph{Boolean algebra}.
   \end{itemize}
 \end{frame}
 %
