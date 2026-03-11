@@ -363,7 +363,7 @@
     %
     That is,
     $\forall D \subseteq \mathcal{T},~directed\;\pmb{:}\;F(\vee_{\mathcal{T}}D)
-    = \vee_{\mathcal{T}}\{F(f)\;\pmb{:}\;f \in D\}.$
+    = \vee_{\mathcal{T}}\{F(f)\;\pmb{|}\;f \in D\}.$
   \end{itemize}
   \pause\begin{theorem}[Kleene's theorem]
     Given a $\mathrm{directed}$-$\mathrm{complete~partial~order}$
@@ -373,7 +373,7 @@
     $\mathrm{least~fixpoint}$, which is the supremum:
     %
     \[
-      \pmb{lfp}_{\leq_{\mathcal{T}}} F = \vee_{\mathcal{T}} \{F^n(\pmb{\lambda}\sigma\pmb{.}\;\bot)\;\pmb{:}\;n < \omega\}
+      \pmb{lfp}_{\leq_{\mathcal{T}}} F = \vee_{\mathcal{T}} \{F^n(\pmb{\lambda}\sigma\pmb{.}\;\bot)\;\pmb{|}\;n < \omega\}
     \]
     %
     of the ascending
@@ -535,29 +535,305 @@
   \end{flalign*}
 \end{frame}
 %
-\section{Program Properties}
-\begin{frame}{Program semantic properties: properties as sets}
+\section{Properties}
+\begin{frame}{Properties as sets}
   \begin{itemize}
-  \item We consider program \emph{semantic} properties to be a property
-    of the denotational semantics $\ssem{\texttt{P}} \in \mathbb{Ev}_\bot \to \mathbb{Ev}_\bot$
-    of a program \texttt{P}.
-  \item More concretely, by a \emph{property} we mean the \emph{set}
-    of objects that have this property.
-  \item Herein, $\wp(\mathbb{Ev}_\bot)$ is the \emph{domain} of properties.
-    %
-    So, if $P$ is a property, then $P \in \wp(\mathbb{Ev}_\bot)$, and
-    a state $\sigma \in \mathbb{Ev}_\bot$ has the property $P$ iff
-    $\sigma \in P$.
-  \item $\text{\O}$ is the \emph{strongest} property.  \hfill {\small\color{gray}(false)}
-  \item $\mathbb{Ev}_\bot$ is the \emph{weakest} property.  \hfill {\small\color{gray}(true)}
+  \item Given a set of entities (or universe) $\mathscr{U}$,
+    properties are \emph{sets of entities} in $\mathscr{U}$ belonging
+    to $\wp(\mathscr{U})$ that have these properties.
+  %
+  \pause\item An entity $e \in \mathscr{U}$ has a property
+    $P \in \wp(\mathscr{U})$ iff $e \in P$, or equivalently,
+    $\{e\} \subseteq P$ (implication).
+  %
+  \pause\item $\text{\O}$ is the \emph{strongest} property.  \hfill {\small\color{gray}(false)}
+  %
+  % \item $\{e\}$ is the \emph{strongest} property of an entity.  \hfill
+  %   {\small\color{gray}($e$ and nothing else)}
+  %
+  \item $\mathscr{U}$ is the \emph{weakest} property.  \hfill {\small\color{gray}(true)}
+  %
   \item $\subseteq$ is \emph{implication}.  \hfill {\small\color{gray}($\to$)}
-  \item $\cup$ is \emph{disjunction}.  \hfill {\small\color{gray}($\vee$)}
-  \item $\cap$ is \emph{intersection}.  \hfill {\small\color{gray}($\cap$)}
-  \item We have a \emph{Boolean algebra}.
+  \end{itemize}
+  %
+  \pause Two important remarks:
+  %
+  \begin{itemize}
+  \item Herein, $e \in P \Leftrightarrow \{e\} \subseteq P$, and,
+    although it may seem weird at first, the latter is the preferred
+    one, since: (\textbf{i}) the use of $\subseteq$ allows us to move
+    from set theory to order/lattice theory (monotone functions, fixpoints, \dots), and (\textbf{ii})
+    abstracting $\subseteq$ is way easier than $\in$.
+  \pause\item By considering properties as sets, we give raise
+    to a Boolean algebra, since we are dealing with powerset-shaped
+    (complete) lattices.
+  \end{itemize}
+  %
+\end{frame}
+%
+\begin{frame}{Properties as sets: example}
+  For example, take our universe $\mathscr{U}$ to be $\mathbb{Z}$, so
+  that properties are in $\wp(\mathbb{Z})$.
+  %
+  \begin{itemize}
+  \item $\text{\O}$ is false (no integer has this property).
+  \item $\mathbb{Z}$ is true (all integers have this property).
+  \item
+    $2\mathbb{Z} \triangleq \{z \in \mathbb{Z}\;\pmb{|}\;\exists k \in
+    \mathbb{Z}\,\pmb{:}\,z = 2k\}$ is the even property.
+  \item
+    $2\mathbb{Z}+1 \triangleq \{z \in \mathbb{Z}\;\pmb{|}\;\exists k
+    \in \mathbb{Z}\,\pmb{:}\,z = 2k+1\}$ is the odd property.
+  \end{itemize}
+  %
+  Intuitively, and integer can only be even or odd, expressed as:
+  $\mathbb{Z} = 2\mathbb{Z} \cup 2\mathbb{Z}+1$.
+\end{frame}
+%
+\begin{frame}{Program semantic properties}
+  \begin{itemize}
+  \item With $\mathscr{U} = \mathbb{Ev}_\bot$, program semantic
+    properties are elements in $\wp(\mathbb{Ev}_\bot)$.
+    %
+  \pause\item
+    The \emph{strongest} semantic property of a program
+    \texttt{P} is its \emph{static} or \emph{collecting} semantics
+    $\csem{\texttt{P}}$.
+    %
+  \pause\item The definition is a bit cumbersome...
   \end{itemize}
 \end{frame}
 %
+\begin{frame}{Collecting semantics: expressions}
+  \vspace*{-3em}
+  \begin{block}{Collecting semantics of expressions}
+    $\pmb{\mathscr{E}} : \mathbb{V} \to (\texttt{E} \in \mathbb{E})
+    \to \mathbb{Ev} \to \wp(\mathbb{I}_\bot)
+    %
+    \text{\small\itshape~where } \mathbb{vars}(\texttt{E}) \subseteq
+    \mathbb{V}$
+    %
+    \begin{flalign*}
+    \hspace*{-.5em}\begin{array}{lllll}
+      \esem{\texttt{k}} \sigma
+      &\triangleq
+      &\{k\}
+      &\in \wp(\mathbb{I})
+      \\[.5em]
+      %
+      \esem{\texttt{x}} \sigma
+      &\triangleq
+      &\{\sigma(\texttt{x})\}
+      &\in \wp(\mathbb{I}_\bot)
+      \\[.5em]
+      %
+      \esem{\texttt{E}_1 \texttt{ - } \texttt{E}_2} \sigma
+      &\triangleq
+      &\{v_1 - v_2\;\pmb{|}\;v_1 \in \esem{\texttt{E}_1}\sigma,  v_2 \in \esem{\texttt{E}_2}\sigma \}
+      &\in \wp(\mathbb{Z})
+      \\[.5em]
+      %
+      \esem{\texttt{E}_1 \texttt{ < } \texttt{E}_2} \sigma
+      &\triangleq
+      &\{v_1 < v_2\;\pmb{|}\;v_1 \in \esem{\texttt{E}_1}\sigma, v_2 \in \esem{\texttt{E}_2}\sigma \}
+      &\in \wp(\mathbb{B})
+      \\[.5em]
+      %
+      \esem{\texttt{E}_1 \texttt{ nand } \texttt{E}_2} \sigma
+      &\triangleq
+      &\{v_1 \uparrow v_2\;\pmb{|}\;v_1 \in \esem{\texttt{E}_1}\sigma, v_2 \in \esem{\texttt{E}_2}\sigma \}
+      &\in \wp(\mathbb{B})
+      \\[.5em]
+      %
+      \bot &&& otherwise
+    \end{array}&&
+    \end{flalign*}
+  \end{block}
+  \vspace*{-.6em}
+\end{frame}
+%
+\begin{frame}{Collecting semantics: statements}
+  \vspace*{-3em}
+  \begin{block}{Denotational semantics of statements}
+    $\pmb{\mathscr{S}} : \mathbb{V} \to (\texttt{S} \in \mathbb{S})
+    \to \wp(\mathbb{Ev}_\bot) \to \wp(\mathbb{Ev}_\bot)
+    %
+    \text{\small\itshape~where } \mathbb{vars}(\texttt{S}) \subseteq
+    \mathbb{V}$
+    %
+    \begin{flalign*}
+    \hspace*{-.5em}\begin{array}{lll}
+      \ssem{\texttt{skip}} \Sigma
+      &\triangleq
+      &\Sigma
+      \\[.5em]
+      %
+      \ssem{\texttt{x := E}} \Sigma
+      &\triangleq
+      &\{\sigma[v/\texttt{x}]\;\pmb{|}\;\sigma \in \Sigma, v \in \esem{\texttt{E}}\sigma\}
+      \\[.5em]
+      %
+      \ssem{\texttt{S}_1 \texttt{; } \texttt{S}_2} \Sigma
+      &\triangleq
+      &(\ssem{\texttt{S}_2} \circ \ssem{\texttt{S}_1}) \Sigma
+      \\[.5em]
+      %
+      \ssem{\texttt{\textbf{if} (E) \textbf{then }} \texttt{S}_1 \texttt{\bfseries~else } \texttt{S}_2} \Sigma
+      &\triangleq
+      &\ssem{\texttt{S}_1}\{\sigma \in \Sigma\;\pmb{|}\; \mathfrak{tt} \in \esem{\texttt{E}}\sigma\}
+      \\
+      &\,\cup &\ssem{\texttt{S}_2}\{\sigma \in \Sigma\;\pmb{|}\; \mathfrak{ff} \in \esem{\texttt{E}}\sigma\}
+      \\[.5em]
+      %
+      \ssem{\texttt{\textbf{while} (E) \textbf{do} S}} \Sigma
+      &\triangleq
+      &\pmb{lfp}_{\leq_{\mathcal{T}}} F
+    \end{array}&&
+  \end{flalign*}
+  %
+  with: $F(f)(\Sigma) = \{\sigma\in\Sigma\;\pmb{|}\;\mathfrak{ff} \in \esem{\texttt{E}}\sigma\}
+  \cup (f \circ \csem{\texttt{S}}) \{\sigma\in\Sigma\;\pmb{|}\;\mathfrak{tt} \in \esem{\texttt{E}}\sigma\}$\\[1em]
+  \textit{undefined} \hspace*{10em} \textit{otherwise}
+  %
+  \vspace*{-2em}
+  %
+  % \begin{flalign*}
+  %   \hspace*{-.5em}\begin{array}{lll}
+  %     \textit{where} &
+  %     \end{cases}
+  %   \end{array}&&
+  % \end{flalign*}
+  %   \end{array}&&
+  %   \end{flalign*}
+  \end{block}
+\end{frame}
+%
+% \begin{frame}{Collecting semantics: loops}
+%   \begin{flalign*}
+%     \hspace*{-.5em}\begin{array}{lll}
+%       \ssem{\texttt{\textbf{while} (E) \textbf{do} S}} \sigma
+%       &\triangleq
+%       &\{\sigma \in \Sigma\;\pmb{|}\;\esem{\texttt{E}}\sigma = \mathfrak{ff}\}\\[.5em]
+%       & \cup & \ssem{\texttt{\only<2->{\color{red}}\textbf{while} (E) \textbf{do} S}}\{\sigma \in \Sigma\;\pmb{|}\;\esem{\texttt{E}}\sigma = \mathfrak{tt}\}
+%     \end{array}&&
+%   \end{flalign*}
+%   %
+%   \begin{itemize}
+%   \pause\item \emph{\color{red}Recursive} definition!
+%   \pause\item We need to make sure that:
+%     \begin{enumerate}
+%     \item The equation above has (at least) one solution.
+%     \item If the equation has a solution, we must take the \emph{most precise} one.
+%     \end{enumerate}
+%   \pause\item And, for this, we use \emph{fixpoints} on \emph{posets} with \emph{information orders}.
+%   \end{itemize}
+%   %
+% \end{frame}
+%
+%
 \section{Abstract Interpretation}
+\begin{frame}{Motivation: undecidability}
+  \begin{center}
+    Proving non-trivial, program semantic properties is
+    \textsc{undecidable} in general.
+  \end{center}
+  %
+  \pause\bigskip
+  %
+  \emph{Abstract interpretation} formalizes a theory for computing
+  sound approximations of program semantic properties.
+  %
+  In general, we (roughly) follow the following steps:
+  %
+  %
+
+  %
+  \bigskip
+  %
+  \pause{\color{gray} Abstract domains}
+  \begin{itemize}
+  \item Consider a subset of the \emph{concrete domain} (in our case,
+    $(\wp(\mathbb{Ev}_\bot),\subseteq)$ of \emph{properties of
+      interest}, and encode such properties in an \emph{abstract
+      domain}
+    $(\pmb{\mathfrak{A}},\preccurlyeq)$.
+  \end{itemize}
+  %
+  \pause{\color{gray} Galois connections \& fixpoint abstraction}
+  \begin{itemize}
+  \item Establish a connection between concrete properties
+    $P \in \wp(\mathbb{Ev}_\bot)$ and abstract properties
+    $P^\sharp \in \mathfrak{A}$ such that proofs in the abstract
+    \emph{imply} proofs in the concrete.
+  \end{itemize}
+  %
+  \pause{\color{gray} Transformer abstraction}
+  \begin{itemize}
+  \item Design an abstract semantic transformer $\asem{\texttt{P}}$
+    that over-approximates the concrete (collecting) semantic
+    transformer $\csem{\texttt{P}}$.
+  \end{itemize}
+  % \item Establish a connection between 
+  % \item This is where the technique of \emph{abstract interpretation} comes in!
+\end{frame}
+%
+\begin{frame}[fragile]{Abstract domains: interval abstraction}
+  \begin{itemize}
+  \item We'll design an abstract domain $(\pmb{\mathfrak{I}},\preccurlyeq)$
+    for \emph{interval analysis}.
+  \item Useful for, \emph{e.g.}, detecting out-of-bound array
+    accesses.
+  \end{itemize}
+  %
+\begin{lstlisting}[basicstyle=\ttfamily,columns=fullflexible,escapeinside={(*}{*)}]
+  n := 1000
+  (*\color{MyDarkBlue}$\{\texttt{n} \in [1000,1000]\}$*)
+  (*\textbf{while}*) (0 < n) (*\textbf{do}*)
+    (*\color{MyDarkBlue}$\{\texttt{n} \in [1,1000]\}$*)
+    n := n - 1
+    (*\color{MyDarkBlue}$\{\texttt{n} \in [0,999]\}$*)
+  (*\color{MyDarkBlue}$\{\texttt{n} \in [0,0]\}$*)
+\end{lstlisting}
+\end{frame}
+%
+\begin{frame}{Interval abstraction: design}
+  \begin{itemize}
+  \item The set $\pmb{\mathfrak{I}}$ is defined as:
+    %
+    \(
+      \pmb{\mathfrak{I}} \triangleq \{\bot\} \cup
+      \{[\ell,r]\;\pmb{|}\;\ell \in \mathbb{Z}^{-\infty}, r \in
+      \mathbb{Z}^{+\infty},\ell \leq r\}.
+    \)
+  \pause\item its order relation
+    $\preccurlyeq$ as:
+    %
+    \(
+      [\ell_1,r_1] \preccurlyeq [\ell_2,r_2] \Leftrightarrow \ell_2 \leq \ell_1 \wedge r_1 \leq r_2.
+    \)
+  \pause\item its \emph{lub} $\curlyvee$ as:
+    %
+    \(
+      [\ell_1,r_1] \curlyvee [\ell_2,r_2] \triangleq [min\{\ell_1,\ell_2\},max\{r_1,r_2\}]
+    \).
+  \pause\item and its \emph{glb} $\curlywedge$ as:
+    %
+    \(
+      [\ell_1,r_1] \curlywedge [\ell_2,r_2] \triangleq \begin{cases}
+        \bot & \text{\textit{if} } r_1 < \ell_2 \vee r_2 < \ell_1\\
+        [max\{\ell_1,\ell_2\},min\{r_1,r_2\}] & \text{\emph{otherwise}}
+      \end{cases}
+    \)
+  \pause\item Under this setting,
+    $(\pmb{\mathfrak{I}},\preccurlyeq)$ is a \emph{complete}
+    lattice.
+  \pause\item And we point-wise extend it to
+    $(\dot{\pmb{\mathfrak{I}}},\dot{\preccurlyeq})$ where
+    $\dot{\pmb{\mathfrak{I}}} \triangleq \mathbb{V} \to
+    \pmb{\mathfrak{I}}$, and the relations/operators are adapted
+    acoordignly, while preserving a complete lattice.
+  \end{itemize}
+\end{frame}
 %
 \begin{frame}[plain]
   \titlepage
