@@ -8,7 +8,7 @@
 \input{macros}
 %
 \title{Abstract Interpretation \& its Application to Semantics Approximation}
-% \subtitle{An Introduction}
+\subtitle{An Introduction (I didn't have time for more)}
 %
 \author{\centering Marco Ciccal\`{e}\\{\fontfamily{cmtt}\selectfont\scriptsize marco.ciccale@imdea.org}}
 \date{\textbf{Aut.~Coffee} -- March 10, 2026}
@@ -693,7 +693,7 @@
   %
   with: $F(f)(\Sigma) = \{\sigma\in\Sigma\;\pmb{|}\;\mathfrak{ff} \in \esem{\texttt{E}}\sigma\}
   \cup (f \circ \csem{\texttt{S}}) \{\sigma\in\Sigma\;\pmb{|}\;\mathfrak{tt} \in \esem{\texttt{E}}\sigma\}$\\[1em]
-  \textit{undefined} \hspace*{10em} \textit{otherwise}
+  $\text{\O}$ \hspace*{14em} \textit{otherwise}
   %
   \vspace*{-2em}
   %
@@ -779,14 +779,13 @@
 %
 \begin{frame}[fragile]{Abstract domains: interval abstraction}
   \begin{itemize}
-  \item We'll design an abstract domain $(\pmb{\mathfrak{I}},\preccurlyeq)$
-    for \emph{interval analysis}.
+  \item We'll design an abstract domain for \emph{interval analysis}.
   \item Useful for, \emph{e.g.}, detecting out-of-bound array
     accesses.
   \end{itemize}
   %
 \begin{lstlisting}[basicstyle=\ttfamily,columns=fullflexible,escapeinside={(*}{*)}]
-  n := 1000
+  n := 1000;
   (*\color{MyDarkBlue}$\{\texttt{n} \in [1000,1000]\}$*)
   (*\textbf{while}*) (0 < n) (*\textbf{do}*)
     (*\color{MyDarkBlue}$\{\texttt{n} \in [1,1000]\}$*)
@@ -796,7 +795,7 @@
 \end{lstlisting}
 \end{frame}
 %
-\begin{frame}{Interval abstraction: design}
+\begin{frame}{Interval abstraction: the lattice}
   \begin{itemize}
   \item The set $\pmb{\mathfrak{I}}$ is defined as:
     %
@@ -815,7 +814,7 @@
     %
     \(
       [\ell_1,r_1] \curlyvee [\ell_2,r_2] \triangleq [min\{\ell_1,\ell_2\},max\{r_1,r_2\}]
-    \).
+    \), with $\bot$ being the neutral element.
   \pause\item and its \emph{glb} $\curlywedge$ as:
     %
     \(
@@ -823,16 +822,319 @@
         \bot & \text{\textit{if} } r_1 < \ell_2 \vee r_2 < \ell_1\\
         [max\{\ell_1,\ell_2\},min\{r_1,r_2\}] & \text{\emph{otherwise}}
       \end{cases}
-    \)
+    \), with $\bot$ being the absorbing element.
   \pause\item Under this setting,
     $(\pmb{\mathfrak{I}},\preccurlyeq)$ is a \emph{complete}
     lattice.
   \pause\item And we point-wise extend it to
-    $(\dot{\pmb{\mathfrak{I}}},\dot{\preccurlyeq})$ where
-    $\dot{\pmb{\mathfrak{I}}} \triangleq \mathbb{V} \to
+    $(\mathbb{Ev}^\sharp,\dot{\preccurlyeq})$ where
+    $\mathbb{Ev}^\sharp \triangleq \mathbb{V} \to
     \pmb{\mathfrak{I}}$, and the relations/operators are adapted
     acoordignly, while preserving a complete lattice.
   \end{itemize}
+\end{frame}
+%
+\begin{frame}{Interval abstraction: minus operation}
+  \begin{itemize}
+  \item The interval minus operation
+    $-^\sharp : \pmb{\mathfrak{I}} \times \pmb{\mathfrak{I}} \to
+    \pmb{\mathfrak{I}}$ defines the interval
+    $[\ell_1,r_1] -^\sharp [\ell_2,r_2]$ of \texttt{x~-~y} when
+    \texttt{x} has the interval $[\ell_1,r_1]$, and \texttt{y} has the
+    interval $[\ell_2,r_2]$.
+  \pause\item It is defined as follows:
+    %
+    \[
+      [\ell_1,r_1] -^\sharp [\ell_2,r_2] \triangleq [\ell_1 - r_2, r_1 - \ell_2]
+    \]
+  \end{itemize}
+\end{frame}
+%
+\begin{frame}{Interval abstraction: abstract semantics of expressions}
+  \vspace*{-1em}
+  % \begin{itemize}
+  % \item The interval of an expression depends on the intervals of its variables.
+  % \item We define the \emph{strict} abstract semantics of expressions.
+  % \end{itemize}
+  %
+  \begin{block}{Abstract semantics of expressions}
+    $\pmb{\mathscr{E}}^\sharp : \mathbb{V} \to (\texttt{E} \in \mathbb{E})
+    \to \mathbb{Ev}^\sharp \to \pmb{\mathfrak{I}}
+    %
+    \text{\small\itshape~where } \mathbb{vars}(\texttt{E}) \subseteq
+    \mathbb{V}$
+    %
+    \begin{flalign*}
+    \hspace*{-.5em}\begin{array}{lllll}
+      \aesem{\texttt{E}} \sigma^\sharp
+      &\triangleq
+      &\bot
+      &\in \pmb{\mathfrak{I}}
+      \quad\text{if some variable in $\sigma^\sharp$ has the interval $\bot$}
+      &\\[.5em]
+      %
+      \aesem{\texttt{1}} \sigma^\sharp
+      &\triangleq
+      &[1,1]
+      &\in \pmb{\mathfrak{I}}
+      &\\[.5em]
+      %
+      \aesem{\texttt{tt}} \sigma^\sharp
+      &\triangleq
+      &[1,1]
+      &\in \pmb{\mathfrak{I}}
+      &\\[.5em]
+      %
+      \aesem{\texttt{ff}} \sigma^\sharp
+      &\triangleq
+      &[0,0]
+      &\in \pmb{\mathfrak{I}}
+      &\\[.5em]
+      %
+      \aesem{\texttt{x}} \sigma^\sharp
+      &\triangleq
+      &\sigma^\sharp(\texttt{x})
+      &\in \pmb{\mathfrak{I}}
+      &\\[.5em]
+      %
+      \aesem{\texttt{E}_1 \texttt{ - } \texttt{E}_2} \sigma^\sharp
+      &\triangleq
+      &\aesem{\texttt{E}_1}\sigma^\sharp -^\sharp \aesem{\texttt{E}_2}\sigma^\sharp
+      &\in \pmb{\mathfrak{I}}
+      &\\[.5em]
+      %
+      \aesem{\texttt{E}_1 \texttt{ < } \texttt{E}_2} \sigma^\sharp
+      &\triangleq
+      &\aesem{\texttt{E}_1}\sigma^\sharp \prec \aesem{\texttt{E}_2}\sigma^\sharp
+      &\in \{[0,0],[1,1],[0,1]\}
+      &\\[.5em]
+      \bot &&& otherwise&
+    \end{array}&&
+    \end{flalign*}
+  \end{block}
+\end{frame}
+%
+\begin{frame}{Interval abstraction: abstract semantics of statements}
+  % \begin{itemize}
+  % \item Now, we proceed similarly with the semantics of statements.
+  % \end{itemize}
+  \begin{block}{Abstract semantics of statements}
+    $\pmb{\mathscr{S}}^\sharp : \mathbb{V} \to (\texttt{E} \in \mathbb{E})
+    \to \mathbb{Ev}^\sharp \to \mathbb{Ev}^\sharp
+    %
+    \text{\small\itshape~where } \mathbb{vars}(\texttt{E}) \subseteq
+    \mathbb{V}$
+    %
+    \begin{flalign*}
+    \hspace*{-.5em}\begin{array}{llll}
+      \asem{\texttt{skip}} \sigma^\sharp
+      &\triangleq
+      &\sigma^\sharp
+      &\\[.5em]
+      %
+      \asem{\texttt{x := E}} \sigma^\sharp
+      &\triangleq
+      &\sigma^\sharp[\aesem{\texttt{E}}\sigma^\sharp/\texttt{x}]
+      &\\[.5em]
+      %
+      \asem{\texttt{S}_1 \texttt{; } \texttt{S}_2} \sigma^\sharp
+      &\triangleq
+      &(\asem{\texttt{S}_2} \circ \asem{\texttt{S}_1}) \sigma^\sharp
+      &\\[.5em]
+    \end{array}&&
+  \end{flalign*}
+\end{block}
+\end{frame}
+%
+\begin{frame}{Interval abstraction: abstract semantics of statements}
+  \begin{flalign*}
+  \hspace*{-.5em}\begin{array}{lll}
+      \asem{\texttt{\textbf{if} (E) \textbf{then }} \texttt{S}_1 \texttt{\bfseries~else } \texttt{S}_2} \sigma^\sharp
+      \quad\triangleq\quad
+      \sigma_1^\sharp \curlyvee \sigma_2^\sharp \text{ \it with }\\[1em]
+      %
+      \qquad \sigma_1^\sharp = \begin{cases}
+        \asem{\texttt{S}_1} \sigma^\sharp & \text{if } 1 \in \aesem{E}\sigma^\sharp\\
+        \bot & \text{otherwise}
+      \end{cases}
+      \\[1em]
+      %
+      \qquad \sigma_2^\sharp = \begin{cases}
+        \asem{\texttt{S}_2} \sigma^\sharp & \text{if } 0 \in \aesem{E}\sigma^\sharp\\
+        \bot & \text{otherwise}
+      \end{cases}
+  \end{array}&&
+  \end{flalign*}
+\end{frame}
+%
+\begin{frame}{Interval abstraction: abstract semantics of statements}
+  \begin{flalign*}
+  \hspace*{-.5em}\begin{array}{lll}
+    \asem{\texttt{\textbf{while} (E) \textbf{do} S}} \sigma^\sharp
+    \quad\triangleq\quad
+    \pmb{lfp}_{\dot{\preccurlyeq}}\,F^\sharp \text{ \it with }\\[1em]
+    %
+    \qquad F^\sharp(f^\sharp)(\sigma^\sharp) = \sigma^\sharp \curlyvee \begin{cases}
+      (f^\sharp \circ \asem{\texttt{S}}) \sigma^\sharp & \text{if } 1 \in \aesem{E}\sigma^\sharp\\
+      \bot & \text{otherwise}
+    \end{cases}
+  \end{array}&&
+  \end{flalign*}
+\end{frame}
+%
+\begin{frame}{Interval abstraction: soundness}
+  \begin{itemize}
+  \item We would like to prove that, for a given set of initial states
+    $\Sigma$, the \emph{interval} semantics $\asem{\texttt{P}}$ is a
+    \emph{weaker property} than the \emph{collecting} semantics
+    $\csem{\texttt{P}}$.
+  %
+  \pause\item For that, we need to map abstract properties in
+    $\mathbb{Ev}^\sharp$ to concrete properties in
+    $\wp(\mathbb{Ev}_\bot)$, via the \emph{concretization} function
+    %
+    \[
+      \dot{\gamma} : \mathbb{Ev}^\sharp \to \wp(\mathbb{Ev}_\bot),
+    \]
+    %
+    and vice-versa, via the \emph{abstraction} function
+    %
+    \[
+      \dot{\alpha} : \wp(\mathbb{Ev}_\bot) \to \mathbb{Ev}^\sharp.
+    \]
+  %
+  \pause\item And they should yield \emph{equivalent} counterparts.
+  \pause\item Formally,
+    %
+    \[
+      \csem{\texttt{P}} \Sigma \subseteq (\dot{\gamma} \circ
+      \asem{\texttt{P}} \circ \dot{\alpha}) \Sigma.
+    \]
+  \end{itemize}
+\end{frame}
+%
+\begin{frame}{Interval abstraction: concretization}
+  We define $\dot{\gamma}$ in steps.
+  %
+  First, $\gamma : \pmb{\mathfrak{I}} \to \wp(\mathbb{I}_\bot)$, where:
+  %
+  \begin{align*}
+    \gamma(\bot) &\triangleq \text{\O}\\
+    \gamma([\ell,r]) &\triangleq \{z \in \mathbb{Z}\;\pmb{|}\;\ell \leq z \leq r\}
+  \end{align*}
+  %
+  Then, we point-wise extend $\dot{\gamma} : \mathbb{Ev}^\sharp \to \wp(\mathbb{Ev}_\bot)$, where:
+  %
+  \begin{align*}
+    \dot{\gamma}(\sigma^\sharp) &\triangleq \{\sigma\;\pmb{|}\;\forall \texttt{x} \in \mathbb{V}\;\pmb{:}\;\sigma(\texttt{x}) \in \gamma(\sigma^\sharp(\texttt{x}))\}
+  \end{align*}
+\end{frame}
+%
+\begin{frame}{Interval abstraction: abstraction}
+  We define $\dot{\alpha}$ in steps.
+  %
+  First, $\alpha: \wp(\mathbb{I}_\bot) \to \pmb{\mathfrak{I}}$, where:
+  %
+  \begin{align*}
+    \alpha(\text{\O}) &\triangleq \bot\\
+    \alpha(Z) &\triangleq [min\,Z,max\,Z]
+  \end{align*}
+  %
+  Then, we point-wise extend $\dot{\alpha} : \wp(\mathbb{Ev}_\bot) \to \mathbb{Ev}^\sharp$, where:
+  %
+  \begin{align*}
+    \dot{\alpha}(\Sigma) &\triangleq \{
+                           \texttt{x} \mapsto [
+                           min\{\sigma(\texttt{x})\;\pmb{|}\;\sigma \in \Sigma\},
+                           max\{\sigma(\texttt{x})\;\pmb{|}\;\sigma \in \Sigma\}
+                           ]\;\pmb{|}\; \texttt{x} \in \mathbb{V} \}
+  \end{align*}
+\end{frame}
+%
+\begin{frame}{Interval abstraction: Galois connection}
+  \begin{itemize}
+  \item The abstraction/concretization functions
+    $(\dot{\alpha},\dot{\gamma})$ are closely related in that, for every
+    $P \in \wp(\mathbb{Ev}_\bot)$ and $P^\sharp \in \mathbb{Ev}^\sharp$,
+    %
+    \[
+      \dot{\alpha}(P)\:\dot{\preccurlyeq}\: P^\sharp \Leftrightarrow P
+      \subseteq \dot{\gamma}(P^\sharp).
+    \]
+  \pause\item Which is the definition of a Galois connection (GC), which we write:
+    %
+    \[
+      (\wp(\mathbb{Ev}_\bot),\subseteq)
+      \galois{\dot{\alpha}}{\dot{\gamma}}
+      (\mathbb{Ev}^\sharp,\dot{\preccurlyeq})
+    \]
+  \pause\item Intuitively, the implication $\dot{\alpha}(P)\:\dot{\preccurlyeq}\:P^\sharp \Rightarrow P
+    \subseteq \dot{\gamma}(P^\sharp)$ states that $\dot{\alpha}(P)$ is a sound over-approximation
+    of the property $P$; and,
+  %
+  \pause\item the converse implication
+    $\dot{\alpha}(P)\:\dot{\preccurlyeq}\:P^\sharp \Leftarrow P
+    \subseteq \dot{\gamma}(P^\sharp)$ states that $\dot{\alpha}(P)$ is the
+    \emph{best} sound overapproximation of the property $P$.
+  %
+  \pause\item So, GCs model the over-approximation of program semantics.
+  \end{itemize}
+\end{frame}
+%
+\begin{frame}[fragile]{Interval abstraction: example}
+  \vspace*{-1em}
+  Going back to our example program \texttt{P}:
+  %
+\begin{lstlisting}[basicstyle=\ttfamily,columns=fullflexible,escapeinside={(*}{*)}]
+  n := 1000;
+  (*\textbf{while}*) (0 < n) (*\textbf{do}*)
+    n := n - 1
+\end{lstlisting}
+  %
+  with $\sigma^\sharp = \{\texttt{x} \mapsto [-\infty,+\infty]\}$, the
+  abstract semantics would look like:
+  %
+  \begin{flalign*}
+    \asem{\texttt{P}} \sigma^\sharp
+    \quad&=\quad (\asem{\texttt{\textbf{while} (0<n) \textbf{do} n := n-1}}\sigma^\sharp \circ \asem{\texttt{n := 1000}}) \sigma^\sharp\\
+    \quad&=\quad \asem{\texttt{\textbf{while} (0<n) \textbf{do} n := n-1}}\{\texttt{x} \mapsto [1000,1000]\}\\
+    \quad&\ldots\quad \{\texttt{x} \mapsto ([1000,1000] - [1,1])\}\\
+    \quad&\ldots\quad \{\texttt{x} \mapsto ([999,999] - [1,1])\}\\
+    % \quad&\ldots\quad \{\texttt{x} \mapsto ([998,998] - [1,1])\}\\
+    \quad&\ldots\quad \text{\itshape fixpoint convergence (using widening: pushing the interval ends}\\
+    \quad&\qquad\; \text{\itshape to the constants in the program)}\\
+    \quad&=\quad \{\texttt{x} \mapsto [0,1000]\}
+  \end{flalign*}
+  %
+  Then,
+  $\dot{\gamma}(\{\texttt{x} \mapsto [0,1000]\}) = \{\{\texttt{x}
+  \mapsto 0\}, \{\texttt{x} \mapsto 1\}, \ldots\}$, which is weaker than
+  $\csem{\texttt{P}}\{\texttt{x} \mapsto \mathbb{Z}\}$.
+\end{frame}
+%
+\begin{frame}{Interval abstraction: caveats}
+  \begin{itemize}
+  \item The design of our abstract domain is rather imprecise.
+  %
+  \item We can improve it by introducing context-sensitive semantics that takes into account
+    the conditions when branching.
+  \end{itemize}
+\end{frame}
+%
+\begin{frame}{Conclusions}
+  \begin{itemize}
+  \item We have seen a little and condensed appetizer of formal
+    semantics and their approximation using abstract interpretation.
+  %
+  \item For following sessions, I'd like to focus more on the implementation part, and fixpoint abstraction.
+  \item Maybe Jurjo could also talk about domain combination (reduced product, Nelson-Oppen, \ldots).
+  \item Quoting Cousot's book:
+  \end{itemize}
+  %
+  \begin{quote}\itshape
+    ``Abstract interpretation provides a unified framework to understand formal methods,
+    semantics design, specifications, proof methods, data-flow analysis, model checking, typing, static analysis, ...  all of them described by a formal language.''
+  \end{quote}
 \end{frame}
 %
 \begin{frame}[plain]
