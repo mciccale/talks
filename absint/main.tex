@@ -8,10 +8,10 @@
 \input{macros}
 %
 \title{Abstract Interpretation \& its Application to Semantics Approximation}
-\subtitle{An Introduction (I didn't have time for more)}
+\subtitle{An Introduction}
 %
 \author{\centering Marco Ciccal\`{e}\\{\fontfamily{cmtt}\selectfont\scriptsize marco.ciccale@imdea.org}}
-\date{\textbf{Aut.~Coffee} -- March 10, 2026}
+\date{\textbf{Aut.~Coffee} -- March 12, 2026}
 \institute{%
   Universidad Politécnica de Madrid (UPM), Madrid Spain\\
   IMDEA Software Institute, Madrid, Spain
@@ -1026,7 +1026,7 @@
   Then, we point-wise extend $\dot{\gamma} : \mathbb{Ev}^\sharp \to \wp(\mathbb{Ev}_\bot)$, where:
   %
   \begin{align*}
-    \dot{\gamma}(\sigma^\sharp) &\triangleq \{\sigma\;\pmb{|}\;\forall \texttt{x} \in \mathbb{V}\;\pmb{:}\;\sigma(\texttt{x}) \in \gamma(\sigma^\sharp(\texttt{x}))\}
+    \dot{\gamma}(\sigma^\sharp) &\triangleq \{\sigma \in \mathbb{Ev}_\bot\;\pmb{|}\;\forall \texttt{x} \in \mathbb{V}\;\pmb{:}\;\sigma(\texttt{x}) \in \gamma(\sigma^\sharp(\texttt{x}))\}
   \end{align*}
 \end{frame}
 %
